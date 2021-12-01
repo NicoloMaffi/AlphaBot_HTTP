@@ -31,4 +31,4 @@ def move():
     return flask.render_template('movement.html')
 
 if __name__ == "__main__":
-    serverweb.run(debug=True, host='localhost')
+    serverweb.run(debug=True, host='0.0.0.0')
