@@ -13,19 +13,18 @@ def index():
 @serverweb.route('/', methods=['POST'])
 def move():
     if flask.request.method == 'POST':
-        match flask.request.form.get('name'):
-            case 'dritto':
-                alphabot.forward()
-            case 'sinistra':
-                alphabot.left()
-            case 'fermo':
-                alphabot.stop()
-            case 'destra':
-                alphabot.right()
-            case 'indietro':
-                alphabot.backward()
-            case _:
-                print('sconosciuto')
+        if flask.request.form.get('name') == 'dritto':
+            alphabot.forward()
+        elif flask.request.form.get('name') == 'indietro':
+            alphabot.backward()
+        elif flask.request.form.get('name') == 'destra':
+            alphabot.right()
+        elif flask.request.form.get('name') == 'sinistra':
+            alphabot.left()
+        elif flask.request.form.get('name') == 'fermo':
+            alphabot.stop()
+        else:
+            print('sconosciuto')
     else:
         print('Utilizzare il metodo GET.')
 
