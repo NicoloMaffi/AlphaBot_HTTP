@@ -1,2 +1,2 @@
 # AlphaBot_HTTP
-Gestione AlphaBot mediante Flask con protocollo HTTP.
+AlphaBot remote controller with Flask via HTTP.
