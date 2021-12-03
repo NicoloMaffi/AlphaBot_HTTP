@@ -16,25 +16,19 @@
         <h1>AlphaBot Remote Controller</h1>
 
         <form action="/" method="POST">
-            <table>
-                <tr>
-                    <td></td>
-                    <td><button value="forward" name="direction">&#x2B06 <br/> Forward</button></td>
-                    <td></td>
-                </tr>
+            <div style="margin-top: 9vh;">
+                <button value="forward" name="direction">&#x2B06 <br/> Forward</button>
+            </div>
+            
+            <div>
+                <button value="left" name="direction">&#x2B05 <br/> Left</button>
+                <button value="stop" name="direction">&#x26D4 <br/> Stop</button>
+                <button value="right" name="direction">&#x27A1 <br/> Right</button>
+            </div>
 
-                <tr>
-                    <td><button value="left" name="direction">&#x2B05 <br/> Left</button></td>
-                    <td><button value="stop" name="direction">&#x26D4 <br/> Stop</button></td>
-                    <td><button value="right" name="direction">&#x27A1 <br/> Right</button></td>
-                </tr>
-
-                <tr>
-                    <td></td>
-                    <td><button value="backward" name="direction">&#x2B07 <br/> Backward</button></td>
-                    <td></td>
-                </tr>
-            </table>
+            <div>
+                <button value="backward" name="direction">&#x2B07 <br/> Backward</button>
+            </div>
         </form>
     </body>
 </html>
