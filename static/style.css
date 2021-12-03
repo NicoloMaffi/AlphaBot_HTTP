@@ -13,12 +13,12 @@ h1 {
     animation: neon 1s ease-in-out infinite alternate;
 }
   
-/*@-webkit-keyframes neon {
+@-webkit-keyframes neon {
     from {
         text-shadow:
             0 0 10px #ffffff,
             0 0 20px #ffffff,
-            0 0 30px #00cbe6, /*#e60073*//*
+            0 0 30px #00cbe6,
             0 0 40px #00cbe6,
             0 0 50px #00cbe6,
             0 0 60px #00cbe6,
@@ -26,14 +26,14 @@ h1 {
     } to {
         text-shadow:
             0 0 20px #ffffff,
-            0 0 30px #4dd5ff, /*#ff4da6*//*
+            0 0 30px #4dd5ff,
             0 0 40px #4dd5ff,
             0 0 50px #4dd5ff,
             0 0 60px #4dd5ff,
             0 0 70px #4dd5ff,
             0 0 80px #4dd5ff;
     }
-}*/
+}
 
 div {
     margin-left: auto;
