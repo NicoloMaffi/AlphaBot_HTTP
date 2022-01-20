@@ -23,9 +23,13 @@ Name | Description |
 main.py | Main Python file
 AlphaBot.py | Library for AlphaBot management functions
 templates | Directory containing HTML files
-index.html | Main HTML page
+index.html | Main HTML page (Log in section)
+controller.html | AlphaBot controller HTML page
+signin.html | Sign in HTML page
 statics | Directory containing CSS and JavaScript files
 index.css | CSS file related to index.html
+controller.css | CSS file related to controller.html
+signin.css | CSS file related to signin.html
 res | Directory containing all images and multimedial resources used by the website
 favicon.ico | Website favicon
 
