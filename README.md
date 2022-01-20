@@ -3,14 +3,16 @@ AlphaBot remote controller with Flask via HTTP.
 
 ### Project Structure
 - AlphaBot_HTTP
-  - main_test.py
-  - main_3-x.py
-  - main_3-10.py
+  - main.py
   - AlphaBot.py
   - templates
     - index.html
+    - controller.html
+    - signin.html
   - statics
     - index.css
+    - controller.css
+    - signin.css
   - res
     - favicon.ico
 
@@ -18,9 +20,7 @@ AlphaBot remote controller with Flask via HTTP.
 
 Name | Description |
 -----|-----------
-main_test.py | Main file (used during tests)
-main_3-10.py | Main file (used for python version 10 )
-main_3-x.py | Main file (used for any other python versions)
+main.py | Main Python file
 AlphaBot.py | Library for AlphaBot management functions
 templates | Directory containing HTML files
 index.html | Main HTML page
