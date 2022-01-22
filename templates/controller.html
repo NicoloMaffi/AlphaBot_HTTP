@@ -39,13 +39,15 @@
             <div id="center-div">
                 <h3>Complex Movements</h3>
 
-                <select name="complex_movements_pool">
-                    {% for mov in complex_movements %}
-                    <option value={{mov}}>{{mov}}</option>
-                    {% endfor %}
-                </select>
+                <form action="/controller" method="POST">
+                    <select name="complexmovspool">
+                        {% for mov in complex_movements %}
+                        <option value={{mov}}>{{mov}}</option>
+                        {% endfor %}
+                    </select>
 
-                <button id="btn-submit" value="submit" name="submit">Submit</button>
+                    <button id="btn-submit" value="submitmov" name="submitmov">Submit</button>
+                </form>
             </div>
         </div>
     </body>
