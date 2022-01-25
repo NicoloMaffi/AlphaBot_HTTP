@@ -121,6 +121,21 @@ def instruction_parser(name):
 
         time.sleep(wait / 1000)
 
+def save_movements_input(movement):
+    conn = sqlite3.connect(DATABASE_PATH)
+    curs = conn.cursor()
+
+    input_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    curs.execute(f"SELECT user_cod, access_date FROM accesses_history")
+    lastPersonAccess = curs.fetchall()[-1][0]
+
+    curs.execute(f"INSERT INTO movements_history VALUES (?, ?, ?, ?)", (None, lastPersonAccess, movement, input_date))
+    
+    conn.commit()
+
+    conn.close()
+
 @serverweb.route('/', methods=['POST', 'GET'])
 def index():
     error_mssg = None
@@ -174,6 +189,8 @@ def signin():
 @serverweb.route('/controller', methods=['POST', 'GET'])
 def controller():
     if flask.request.method == 'POST':
+
+        movement = flask.request.form.get('direction')
         if flask.request.form.get('direction') == 'forward':
             alphabot.forward()
         elif flask.request.form.get('direction') == 'backward':
@@ -185,7 +202,10 @@ def controller():
         elif flask.request.form.get('direction') == 'stop':
             alphabot.stop()
         elif flask.request.form.get('submitmov'):
-            instruction_parser(flask.request.form.get('complexmovspool'))
+            movement = flask.request.form.get('complexmovspool')
+            instruction_parser(movement)
+
+        save_movements_input(movement)
 
     return flask.render_template('controller.html', complex_movements=complex_movements_pool())
 
