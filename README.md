@@ -1,4 +1,4 @@
-# AlphaBot_HTTP
+# AlphaBot_HTTP <img alt="ICON" src="https://github.com/NicoloMaffi/AlphaBot_HTTP/blob/main/res/favicon.ico" width="30">
 AlphaBot remote controller with Flask via HTTP.
 
 
