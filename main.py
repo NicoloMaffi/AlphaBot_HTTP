@@ -127,8 +127,8 @@ def save_movements_input(movement):
 
     input_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
-    curs.execute(f"SELECT user_cod, access_date FROM accesses_history")
-    lastPersonAccess = curs.fetchall()[-1][0]
+    curs.execute(f"SELECT user_cod FROM accesses_history ORDER BY access_date DESC LIMIT 1;")
+    lastPersonAccess = curs.fetchall()[0][0]
 
     curs.execute(f"INSERT INTO movements_history VALUES (?, ?, ?, ?)", (None, lastPersonAccess, movement, input_date))
     
