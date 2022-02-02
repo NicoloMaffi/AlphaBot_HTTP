@@ -74,7 +74,7 @@ def save_login(username):
 
     login_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    curs.execute(f"INSERT INTO accesses_history VALUES (?, ?, ?)", (None, username, login_date))
+    curs.execute(f"INSERT INTO access_history VALUES (?, ?, ?)", (None, username, login_date))
     conn.commit()
 
     conn.close()
@@ -85,7 +85,7 @@ def complex_movements_pool():
     conn = sqlite3.connect(DATABASE_PATH)
     curs = conn.cursor()
 
-    row = curs.execute(f"SELECT name FROM complex_movements;").fetchall()
+    row = curs.execute(f"SELECT movement_name FROM complex_movements;").fetchall()
 
     if row != []:
         res = [movement[0] for movement in row]
@@ -98,7 +98,7 @@ def instruction_parser(name):
     conn = sqlite3.connect(DATABASE_PATH)
     curs = conn.cursor()
 
-    instruction = curs.execute(f"SELECT instruction FROM complex_movements WHERE name = '{name}';").fetchall()
+    instruction = curs.execute(f"SELECT instruction FROM complex_movements WHERE movement_name = '{name}';").fetchall()
 
     conn.close()
 
@@ -121,17 +121,14 @@ def instruction_parser(name):
 
         time.sleep(wait / 1000)
 
-def save_movements_input(movement):
+def save_movement(movement):
     conn = sqlite3.connect(DATABASE_PATH)
     curs = conn.cursor()
 
+    username = flask.request.cookies.get("username")
     input_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    curs.execute(f"SELECT user_cod FROM accesses_history ORDER BY access_date DESC LIMIT 1;")
-    lastPersonAccess = curs.fetchall()[0][0]
 
-    curs.execute(f"INSERT INTO movements_history VALUES (?, ?, ?, ?)", (None, lastPersonAccess, movement, input_date))
-    
+    curs.execute(f"INSERT INTO movement_history VALUES (?, ?, ?, ?);", (None, username, movement, input_date))
     conn.commit()
 
     conn.close()
@@ -156,7 +153,11 @@ def index():
                 error_mssg = "Invalid password. Please try again!"
             else:
                 save_login(username)
-                return flask.redirect(flask.url_for('controller'))
+
+                resp = flask.make_response(flask.redirect(flask.url_for('controller')))
+                resp.set_cookie("username", username)
+
+                return resp
         elif flask.request.form.get('sign_in'):
             return flask.redirect(flask.url_for('signin'))
 
@@ -205,7 +206,7 @@ def controller():
             movement = flask.request.form.get('complexmovspool')
             instruction_parser(movement)
 
-        save_movements_input(movement)
+        save_movement(movement)
 
     return flask.render_template('controller.html', complex_movements=complex_movements_pool())
 
