@@ -19,6 +19,5 @@ function send_movement(movement) {
         }
     }).catch(error => {
         console.error(error);
-        return false;
     });
 }
