@@ -9,6 +9,8 @@
         <title>AlphaBot Remote Controller</title>
         <link rel="icon" type="image/x-icon" href="../res/favicon.ico">
 
+        <script type="application/x-javascript" src="../static/script.js"></script>
+
         <link rel="stylesheet" href="../static/controller.css"/>
     </head>
 
@@ -18,36 +20,32 @@
         <div class="container-class">
             <h3>Basic Movements</h3>
 
-            <form action="/controller" method="POST">
-                <div class="btn-class">
-                    <button value="forward" name="direction">&#x2B06 <br/> Forward</button>
-                </div>
-                    
-                <div class="btn-class">
-                    <button value="left" name="direction">&#x2B05 <br/> Left</button>
-                    <button value="stop" name="direction">&#x26D4 <br/> Stop</button>
-                    <button value="right" name="direction">&#x27A1 <br/> Right</button>
-                </div>
-            
-                <div class="btn-class">
-                    <button value="backward" name="direction">&#x2B07 <br/> Backward</button>
-                </div>
-            </form>
+            <div class="btn-class">
+                <button value="forward" name="direction" onclick="send_movement(this.value);">&#x2B06 <br/> Forward</button>
+            </div>
+                
+            <div class="btn-class">
+                <button value="left" name="direction" onclick="send_movement(this.value);">&#x2B05 <br/> Left</button>
+                <button value="stop" name="direction" onclick="send_movement(this.value);">&#x26D4 <br/> Stop</button>
+                <button value="right" name="direction" onclick="send_movement(this.value);">&#x27A1 <br/> Right</button>
+            </div>
+        
+            <div class="btn-class">
+                <button value="backward" name="direction" onclick="send_movement(this.value);">&#x2B07 <br/> Backward</button>
+            </div>
         </div>
 
         <div class="container-class">
             <div id="center-div">
                 <h3>Complex Movements</h3>
 
-                <form action="/controller" method="POST">
-                    <select name="complexmovspool">
-                        {% for mov in complex_movements %}
-                        <option value={{mov}}>{{mov}}</option>
-                        {% endfor %}
-                    </select>
+                <select name="complexmovspool">
+                    {% for mov in complex_movements %}
+                    <option value={{mov}}>{{mov}}</option>
+                    {% endfor %}
+                </select>
 
-                    <button id="btn-submit" value="submitmov" name="submitmov">Submit</button>
-                </form>
+                <button id="btn-submit" name="submitmov" onclick="send_movement(document.querySelector('[name=\'complexmovspool\']').value);">Submit</button>
             </div>
         </div>
     </body>

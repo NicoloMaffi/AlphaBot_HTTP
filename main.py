@@ -154,7 +154,7 @@ def index():
             else:
                 save_login(username)
 
-                resp = flask.make_response(flask.redirect(flask.url_for('controller')))
+                resp = flask.make_response(flask.redirect(flask.url_for('controller_page')))
                 resp.set_cookie("username", username)
 
                 return resp
@@ -187,28 +187,35 @@ def signin():
 
     return flask.render_template('signin.html', error=error_mssg)
 
+@serverweb.route('/controller_page', methods=['POST', 'GET'])
+def controller_page():
+    return flask.render_template('controller.html', complex_movements=complex_movements_pool())
+
 @serverweb.route('/controller', methods=['POST', 'GET'])
 def controller():
-    if flask.request.method == 'POST':
+    result = {"state": "ERROR"}
 
-        movement = flask.request.form.get('direction')
-        if flask.request.form.get('direction') == 'forward':
+    if flask.request.method == 'POST':
+        movement = flask.request.form.get('movement')
+
+        if movement == 'forward':
             alphabot.forward()
-        elif flask.request.form.get('direction') == 'backward':
+        elif movement == 'backward':
             alphabot.backward()
-        elif flask.request.form.get('direction') == 'right':
+        elif movement == 'right':
             alphabot.right()
-        elif flask.request.form.get('direction') == 'left':
+        elif movement == 'left':
             alphabot.left()
-        elif flask.request.form.get('direction') == 'stop':
+        elif movement == 'stop':
             alphabot.stop()
-        elif flask.request.form.get('submitmov'):
-            movement = flask.request.form.get('complexmovspool')
+        else:
             instruction_parser(movement)
 
         save_movement(movement)
 
-    return flask.render_template('controller.html', complex_movements=complex_movements_pool())
+        result = {"state": "OK"}
+
+    return flask.jsonify(result)
 
 if __name__ == "__main__":
     serverweb.run(debug=True, host="127.0.0.1")#host='0.0.0.0')
