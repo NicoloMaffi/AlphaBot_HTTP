@@ -5,38 +5,48 @@ import random
 import string
 import datetime
 import time
-import AlphaBot_test
+import AlphaBot
+
+ALPHABET = string.ascii_letters + string.digits + string.punctuation
+
+PEPPER = """N`_Dep(F%uzQ=|JV\\x)]XI[ByuQtB.VwUZ@z@|ySMx\\B5?uonW5"0*Pqik}4ntC4}8GZd4/pdYDv(h6KGz)Prf0c^R:#&g_6]R-hR:tlI(3n5aey3NB3$OiabgCru?Po"""
 
 DATABASE_PATH = './data.db'
 
-NO_ERROR = 0
-EMPTY_FIELDS_ERROR = -1
-WRONG_UNAME_ERROR = -2
-WRONG_PASSWD_ERROR = -3
-UNAME_ALREADY_EXISTS_ERROR = -4
-PASSWDS_DONT_MATCH = -5
+NO_ERROR = "None"
+EMPTY_FIELDS_ERROR = "Please fill every fields!"
+WRONG_USERNAME_ERROR = "Invalid username. Please try again!"
+WRONG_PASSWORD_ERROR = "Invalid password. Please try again!"
+USERNAME_ALREADY_EXISTS_ERROR = "Username '%s' already exists. Please try another one!"
+PASSWORDS_DONT_MATCH = "Passwords do not match. Please Try again!"
 
-serverweb = flask.Flask(__name__)
+webserver = flask.Flask(__name__)
 
-alphabot = AlphaBot_test.AlphaBot()
+alphabot = AlphaBot.AlphaBot()
 alphabot.stop()
 
-def login_checker(username, password):
+def login_check(username, password):
     if username == "" or password == "":
         return EMPTY_FIELDS_ERROR
 
     conn = sqlite3.connect(DATABASE_PATH)
     curs = conn.cursor()
 
-    row = curs.execute(f"SELECT password, salt FROM users WHERE username = '{username}';").fetchall()
+    try:
+        row = curs.execute("SELECT password, salt FROM users WHERE username = ?;", (username,)).fetchall()
+    except:
+        print("Error")
 
     if row == []:
         conn.close()
-        return WRONG_UNAME_ERROR
+        return WRONG_USERNAME_ERROR
+
+    salt = row[0][1]
+    db_password = row[0][0]
     
-    if hashlib.sha512((password + row[0][1]).encode()).hexdigest() != row[0][0]:
+    if hashlib.sha512((password + salt + PEPPER).encode()).hexdigest() != db_password:
         conn.close()
-        return WRONG_PASSWD_ERROR
+        return WRONG_PASSWORD_ERROR
 
     conn.close()
 
@@ -51,14 +61,14 @@ def signin_checker(username, password1, password2):
 
     if curs.execute(f"SELECT * FROM users WHERE username = '{username}';").fetchall() != []:
         conn.close()
-        return UNAME_ALREADY_EXISTS_ERROR
+        return USERNAME_ALREADY_EXISTS_ERROR
 
     if password1 != password2:
         conn.close()
-        return PASSWDS_DONT_MATCH
+        return PASSWORDS_DONT_MATCH
 
-    salt = "".join(random.choices(string.printable, k = random.randint(10, 20)))
-    hashed_password = hashlib.sha512((password1 + salt).encode()).hexdigest()
+    salt = "".join(random.choices(ALPHABET, k = len(PEPPER)))
+    hashed_password = hashlib.sha512((password1 + salt + PEPPER).encode()).hexdigest()
     signin_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     curs.execute(f"INSERT INTO users VALUES (?, ?, ?, ?);", (username, hashed_password, salt, signin_date))
@@ -133,37 +143,32 @@ def save_movement(movement):
 
     conn.close()
 
-@serverweb.route('/', methods=['POST', 'GET'])
+@webserver.route('/', methods=['POST', 'GET'])
 def index():
     error_mssg = None
-    error_code = NO_ERROR
 
     if flask.request.method == 'POST':
         if flask.request.form.get('log_in'):
             username = flask.request.form.get('uname')
             password = flask.request.form.get('passwd')
 
-            error_code = login_checker(username, password)
+            error =  login_check(username, password)
 
-            if error_code == EMPTY_FIELDS_ERROR:
-                error_mssg = "Please fill every fields!"
-            elif error_code == WRONG_UNAME_ERROR:
-                error_mssg = "Invalid username. Please try again!"
-            elif error_code == WRONG_PASSWD_ERROR:
-                error_mssg = "Invalid password. Please try again!"
-            else:
+            if error == NO_ERROR:
                 save_login(username)
 
                 resp = flask.make_response(flask.redirect(flask.url_for('controller_page')))
                 resp.set_cookie("username", username)
 
                 return resp
+            else:
+                error_mssg = error
         elif flask.request.form.get('sign_in'):
             return flask.redirect(flask.url_for('signin'))
 
     return flask.render_template('index.html', error=error_mssg)
 
-@serverweb.route('/signin', methods=['POST', 'GET'])
+@webserver.route('/signin', methods=['POST', 'GET'])
 def signin():
     error_mssg = None
     error_code = NO_ERROR
@@ -178,20 +183,20 @@ def signin():
 
             if error_code == EMPTY_FIELDS_ERROR:
                 error_mssg = "Please fill every fields!"
-            elif error_code == UNAME_ALREADY_EXISTS_ERROR:
+            elif error_code == USERNAME_ALREADY_EXISTS_ERROR:
                 error_mssg = f"Username '{username}' already exists. Please try another one!"
-            elif error_code == PASSWDS_DONT_MATCH:
+            elif error_code == PASSWORDS_DONT_MATCH:
                 error_mssg = "Passwords do not match. Please Try again!"
             else:
                 return flask.redirect(flask.url_for('index'))
 
     return flask.render_template('signin.html', error=error_mssg)
 
-@serverweb.route('/controller_page', methods=['POST', 'GET'])
+@webserver.route('/controller_page', methods=['POST', 'GET'])
 def controller_page():
     return flask.render_template('controller.html', complex_movements=complex_movements_pool())
 
-@serverweb.route('/controller', methods=['POST', 'GET'])
+@webserver.route('/controller', methods=['POST', 'GET'])
 def controller():
     result = {"state": "ERROR"}
 
@@ -218,4 +223,4 @@ def controller():
     return flask.jsonify(result)
 
 if __name__ == "__main__":
-    serverweb.run(debug=True, host="127.0.0.1")#host='0.0.0.0')
+    webserver.run(debug=True, host="127.0.0.1")
