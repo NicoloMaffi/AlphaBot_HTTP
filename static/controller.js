@@ -5,7 +5,7 @@ function send_movement(movement) {
 
     data.append("movement", movement);
 
-    fetch("/controller", {
+    fetch("/set_movement", {
         method: "POST",
         header: {
             "Content-Type": "application/json;charset=UTF-8"
@@ -14,7 +14,7 @@ function send_movement(movement) {
     }).then(response => {
         return response.json();
     }).then(json => {
-        if(json["state"] == "ERROR") {
+        if(json["state"] == "error") {
             console.error("Error");
         }
     }).catch(error => {

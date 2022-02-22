@@ -21,11 +21,12 @@ USERNAME_ALREADY_EXISTS_ERROR = "Username '%s' already exists. Please try anothe
 PASSWORDS_DONT_MATCH = "Passwords do not match. Please Try again!"
 
 webserver = flask.Flask(__name__)
+webserver.secret_key = "VX9R76p}e53.:x!CD,O1lKYFz+K~Ld\"%"
 
 alphabot = AlphaBot.AlphaBot()
 alphabot.stop()
 
-def login_check(username, password):
+def log_in_check(username, password):
     if username == "" or password == "":
         return EMPTY_FIELDS_ERROR
 
@@ -52,39 +53,39 @@ def login_check(username, password):
 
     return NO_ERROR
 
-def signin_checker(username, password1, password2):
-    if username == "" or password1 == "" or password2 == "":
+def sign_up_check(username, password, repeat_password):
+    if username == "" or password == "" or repeat_password == "":
         return EMPTY_FIELDS_ERROR
+
+    if password != repeat_password:
+        conn.close()
+        return PASSWORDS_DONT_MATCH
 
     conn = sqlite3.connect(DATABASE_PATH)
     curs = conn.cursor()
 
-    if curs.execute(f"SELECT * FROM users WHERE username = '{username}';").fetchall() != []:
+    if curs.execute(f"SELECT * FROM users WHERE username = ?;", (username,)).fetchall() != []:
         conn.close()
         return USERNAME_ALREADY_EXISTS_ERROR
 
-    if password1 != password2:
-        conn.close()
-        return PASSWORDS_DONT_MATCH
-
     salt = "".join(random.choices(ALPHABET, k = len(PEPPER)))
-    hashed_password = hashlib.sha512((password1 + salt + PEPPER).encode()).hexdigest()
-    signin_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    hashed_password = hashlib.sha512((password + salt + PEPPER).encode()).hexdigest()
+    sign_up_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    curs.execute(f"INSERT INTO users VALUES (?, ?, ?, ?);", (username, hashed_password, salt, signin_date))
+    curs.execute(f"INSERT INTO users VALUES (?, ?, ?, ?);", (username, hashed_password, salt, sign_up_date))
     conn.commit()
 
     conn.close()
 
     return NO_ERROR
 
-def save_login(username):
+def save_log_in(username):
     conn = sqlite3.connect(DATABASE_PATH)
     curs = conn.cursor()
 
-    login_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_in_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    curs.execute(f"INSERT INTO access_history VALUES (?, ?, ?)", (None, username, login_date))
+    curs.execute(f"INSERT INTO access_history VALUES (?, ?, ?)", (None, username, log_in_date))
     conn.commit()
 
     conn.close()
@@ -108,7 +109,7 @@ def instruction_parser(name):
     conn = sqlite3.connect(DATABASE_PATH)
     curs = conn.cursor()
 
-    instruction = curs.execute(f"SELECT instruction FROM complex_movements WHERE movement_name = '{name}';").fetchall()
+    instruction = curs.execute(f"SELECT instruction FROM complex_movements WHERE movement_name = ?;", (name,)).fetchall()
 
     conn.close()
 
@@ -131,11 +132,10 @@ def instruction_parser(name):
 
         time.sleep(wait / 1000)
 
-def save_movement(movement):
+def save_movement(movement, username):
     conn = sqlite3.connect(DATABASE_PATH)
     curs = conn.cursor()
 
-    username = flask.request.cookies.get("username")
     input_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     curs.execute(f"INSERT INTO movement_history VALUES (?, ?, ?, ?);", (None, username, movement, input_date))
@@ -145,60 +145,46 @@ def save_movement(movement):
 
 @webserver.route('/', methods=['POST', 'GET'])
 def index():
-    error_mssg = None
+    error = None
 
     if flask.request.method == 'POST':
         if flask.request.form.get('log_in'):
-            username = flask.request.form.get('uname')
-            password = flask.request.form.get('passwd')
+            username = flask.request.form.get('username')
+            password = flask.request.form.get('password')
 
-            error =  login_check(username, password)
+            error =  log_in_check(username, password)
 
             if error == NO_ERROR:
-                save_login(username)
+                save_log_in(username)
 
-                resp = flask.make_response(flask.redirect(flask.url_for('controller_page')))
-                resp.set_cookie("username", username)
+                flask.session["username"] = username
 
-                return resp
-            else:
-                error_mssg = error
-        elif flask.request.form.get('sign_in'):
-            return flask.redirect(flask.url_for('signin'))
+                return flask.redirect(flask.url_for('controller'))
+        elif flask.request.form.get('sign_up'):
+            return flask.redirect(flask.url_for('sign_up'))
 
-    return flask.render_template('index.html', error=error_mssg)
+    return flask.render_template('index.html', error=error)
 
-@webserver.route('/signin', methods=['POST', 'GET'])
-def signin():
-    error_mssg = None
-    error_code = NO_ERROR
+@webserver.route('/sign_up', methods=['POST', 'GET'])
+def sign_up():
+    error = None
 
     if flask.request.method == 'POST':
         if flask.request.form.get('confirm'):
-            username = flask.request.form.get('uname')
-            password1 = flask.request.form.get('passwd')
-            password2 = flask.request.form.get('repasswd')
+            username = flask.request.form.get('username')
+            password = flask.request.form.get('password')
+            repeat_password = flask.request.form.get('repeat_password')
 
-            error_code = signin_checker(username, password1, password2)
+            error = sign_up_check(username, password, repeat_password)
 
-            if error_code == EMPTY_FIELDS_ERROR:
-                error_mssg = "Please fill every fields!"
-            elif error_code == USERNAME_ALREADY_EXISTS_ERROR:
-                error_mssg = f"Username '{username}' already exists. Please try another one!"
-            elif error_code == PASSWORDS_DONT_MATCH:
-                error_mssg = "Passwords do not match. Please Try again!"
-            else:
+            if error == NO_ERROR:
                 return flask.redirect(flask.url_for('index'))
 
-    return flask.render_template('signin.html', error=error_mssg)
+    return flask.render_template('sign_up.html', error=error)
 
-@webserver.route('/controller_page', methods=['POST', 'GET'])
-def controller_page():
-    return flask.render_template('controller.html', complex_movements=complex_movements_pool())
-
-@webserver.route('/controller', methods=['POST', 'GET'])
-def controller():
-    result = {"state": "ERROR"}
+@webserver.route('/set_movement', methods=['POST', 'GET'])
+def set_movement():
+    result = {"state": "error"}
 
     if flask.request.method == 'POST':
         movement = flask.request.form.get('movement')
@@ -216,11 +202,24 @@ def controller():
         else:
             instruction_parser(movement)
 
-        save_movement(movement)
+        save_movement(movement, flask.session.get("username"))
 
-        result = {"state": "OK"}
+        result = {"state": "normal"}
 
     return flask.jsonify(result)
+
+@webserver.route('/controller', methods=['POST', 'GET'])
+def controller():
+    if not flask.session["username"]:
+        return flask.redirect(flask.url_for('index'))
+
+    return flask.render_template('controller.html', complex_movements=complex_movements_pool())
+
+@webserver.route("/log_out", methods=["POST", "GET"])
+def log_out():
+    flask.session.pop('username', default=None)
+
+    return flask.redirect(flask.url_for('index'))
 
 if __name__ == "__main__":
     webserver.run(debug=True, host="127.0.0.1")

@@ -9,20 +9,20 @@
         <title>AlphaBot Remote Controller</title>
         <link rel="icon" type="image/x-icon" href="../res/favicon.ico">
 
-        <link rel="stylesheet" href="../static/index.css"/>
+        <link rel="stylesheet" href="../static/sign_up.css"/>
     </head>
 
     <body>
         <div class="container-class">
-            <h1>Log in Section</h1>
+            <h1>Sign in Section</h1>
 
-            <form action="/" method="POST">
+            <form action="/sign_up" method="POST">
                 <input type="text" name="username" placeholder="Username" autocomplete="off"> <br><br>
                 <input type="password" name="password" placeholder="Password"> <br><br>
+                <input type="password" name="repeat_password" placeholder="Repeat Password"> <br><br>
 
                 <div class="btn-container-class">
-					<button value="log_in" name="log_in">Log in</button>
-                    <button value="sign_up" name="sign_up">Sign up</button>
+                    <button value="confirm" name="confirm">Confirm</button>
                 </div>
             </form>
         </div>
