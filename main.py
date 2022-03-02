@@ -13,6 +13,7 @@ PEPPER = """N`_Dep(F%uzQ=|JV\\x)]XI[ByuQtB.VwUZ@z@|ySMx\\B5?uonW5"0*Pqik}4ntC4}8
 
 DATABASE_PATH = './data.db'
 
+# error messages
 NO_ERROR = "None"
 EMPTY_FIELDS_ERROR = "Please fill every fields!"
 WRONG_USERNAME_ERROR = "Invalid username. Please try again!"
@@ -21,23 +22,25 @@ USERNAME_ALREADY_EXISTS_ERROR = "Username '%s' already exists. Please try anothe
 PASSWORDS_DONT_MATCH = "Passwords do not match. Please Try again!"
 
 webserver = flask.Flask(__name__)
+# for sessions
 webserver.secret_key = "VX9R76p}e53.:x!CD,O1lKYFz+K~Ld\"%"
 
 alphabot = AlphaBot.AlphaBot()
 alphabot.stop()
 
+#funcion for checking credentials
 def log_in_check(username, password):
     if username == "" or password == "":
         return EMPTY_FIELDS_ERROR
 
     conn = sqlite3.connect(DATABASE_PATH)
     curs = conn.cursor()
-
+    # try if the credential are in the db and match with the input
     try:
         row = curs.execute("SELECT password, salt FROM users WHERE username = ?;", (username,)).fetchall()
     except:
         print("Error")
-
+    
     if row == []:
         conn.close()
         return WRONG_USERNAME_ERROR
@@ -53,6 +56,7 @@ def log_in_check(username, password):
 
     return NO_ERROR
 
+# funcion that put the data in the db on sign up
 def sign_up_check(username, password, repeat_password):
     if username == "" or password == "" or repeat_password == "":
         return EMPTY_FIELDS_ERROR
@@ -79,6 +83,7 @@ def sign_up_check(username, password, repeat_password):
 
     return NO_ERROR
 
+# save the log in in the db
 def save_log_in(username):
     conn = sqlite3.connect(DATABASE_PATH)
     curs = conn.cursor()
@@ -90,6 +95,7 @@ def save_log_in(username):
 
     conn.close()
 
+# read the complex movement in the db and return it
 def complex_movements_pool():
     res = None
 
@@ -104,7 +110,7 @@ def complex_movements_pool():
     conn.close()
 
     return res
-
+# 
 def instruction_parser(name):
     conn = sqlite3.connect(DATABASE_PATH)
     curs = conn.cursor()
