@@ -15,7 +15,7 @@ function send_movement(movement) {
         return response.json();
     }).then(json => {
         if(json["state"] == "error") {
-            console.error("Error");
+            console.error("We are experiencing some errors. Please try again later!");
         }
     }).catch(error => {
         console.error(error);

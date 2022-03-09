@@ -12,6 +12,3 @@ AlphaBot remote controller with Flask via HTTP.
 
 ### Controller Section
 <img alt="controller_img" src="https://github.com/nikmaffi/AlphaBot_HTTP/blob/main/docs/ui/controller.png" width="600">
-
-### ER scheme
-<img src="https://github.com/NicoloMaffi/AlphaBot_HTTP/blob/main/docs/db/er.png" width="600">
