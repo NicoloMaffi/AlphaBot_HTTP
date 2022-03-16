@@ -252,7 +252,7 @@ def controller():
         return flask.redirect(flask.url_for('index'))
 
     if flask.request.method == 'POST':
-        if flask.request.form.get('log_out'):
+        if flask.request.form['log_out']:
             return flask.redirect(flask.url_for('log_out'))
 
     return flask.render_template('controller.html', complex_movements=complex_movements_pool())
