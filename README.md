@@ -12,3 +12,9 @@ AlphaBot remote controller with Flask via HTTP.
 
 ### Controller Section
 <img alt="controller_img" src="https://github.com/nikmaffi/AlphaBot_HTTP/blob/main/docs/ui/controller.png" width="600">
+
+### Entity-Relationship Scheme
+<img alt="er_scheme" src="https://github.com/nikmaffi/AlphaBot_HTTP/blob/main/docs/db/er.png" width="500">
+
+### Restored Entity-Relationship Scheme
+<img alt="er_scheme" src="https://github.com/nikmaffi/AlphaBot_HTTP/blob/main/docs/db/restored_er.png" width="500">
