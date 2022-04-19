@@ -9,17 +9,17 @@ def move(url, direction):
 
         if 0 not in data.values():
             # vai dritto
-            requests.get(url + "/api/v1/motors/both?pwmL=-40&pwmR=40&time=0.5")
+            requests.get(url + "/api/v1/motors/both?pwmL=-50&pwmR=60&time=0.2")
         else:
-            requests.get(url + "/api/v1/motors/both?pwmL=-0&pwmR=0&time=0.5")
-            requests.get(url + "/api/v1/motors/both?pwmL=25&pwmR=-25&time=0.5")
+            requests.get(url + "/api/v1/motors/both?pwmL=-0&pwmR=0&time=0.1")
+            requests.get(url + "/api/v1/motors/both?pwmL=50&pwmR=-60&time=0.2")
 
             if direction == "r":
                 #vai a destra
-                requests.get(url + "/api/v1/motors/both?pwmL=0&pwmR=30&time=1")
+                requests.get(url + "/api/v1/motors/both?pwmL=0&pwmR=27&time=1")
             elif direction == "l":
                 #vai a sinistra
-                requests.get(url + "/api/v1/motors/both?pwmL=-30&pwmR=0&time=1")
+                requests.get(url + "/api/v1/motors/both?pwmL=-27&pwmR=0&time=1")
             
 def main():
     move(sys.argv[1], sys.argv[2])
