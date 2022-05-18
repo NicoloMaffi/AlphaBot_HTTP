@@ -16,10 +16,10 @@ def move(url, direction):
 
             if direction == "r":
                 #vai a destra
-                requests.get(url + "/api/v1/motors/both?pwmL=0&pwmR=27&time=1")
+                requests.get(url + "/api/v1/motors/both?pwmL=0&pwmR=25&time=1")
             elif direction == "l":
                 #vai a sinistra
-                requests.get(url + "/api/v1/motors/both?pwmL=-27&pwmR=0&time=1")
+                requests.get(url + "/api/v1/motors/both?pwmL=-25&pwmR=0&time=1")
             
 def main():
     move(sys.argv[1], sys.argv[2])

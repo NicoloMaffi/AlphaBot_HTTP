@@ -300,5 +300,20 @@ def both_motors_api():
 
     return flask.jsonify(resp)
 
+@app.route("/api/v1/camera", methods = ["GET"])
+def camera():
+    pass
+
 if __name__ == "__main__":
+    print('\n\
+        888b     d888  .d8888b.     888b     d888      8888888b.  d8b\n\
+        8888b   d8888 d88P  "88b    8888b   d8888      888   Y88b Y8P\n\
+        88888b.d88888 Y88b. d88P    88888b.d88888      888    888\n\
+        888Y88888P888  "Y8888P"     888Y88888P888      888   d88P 888\n\
+        888 Y888P 888 .d88P88K.d88P 888 Y888P 888      8888888P"  888\n\
+        888  Y8P  888 888"  Y888P"  888  Y8P  888      888        888\n\
+        888   "   888 Y88b .d8888b  888   "   888      888        888\n\
+        888       888  "Y8888P" Y88b888       888      888        888\n\
+    ')
+
     app.run(debug = False, host = "0.0.0.0")
